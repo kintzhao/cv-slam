@@ -1,0 +1,135 @@
+<calibFile>./configure/GazeboConfigure/AR_cali.cal</calibFile>
+<cvCalibFile>./configure/GazeboConfigure/CV_cali.xml</cvCalibFile>
+
+<isundistort>0</isundistort>
+<sonyCamZoom>small</sonyCamZoom>
+<processingType>2</processingType>
+
+
+<imgW>640</imgW>
+<imgH>480</imgH>
+
+
+<corn0x20>-18.75</corn0x20>
+<corn0y20> 18.75</corn0y20>
+<corn0z20> 0.0  </corn0z20>
+
+<corn1x20>-18.75</corn1x20>
+<corn1y20>-18.75</corn1y20>
+<corn1z20> 0.0  </corn1z20>
+
+<corn2x20> 18.75</corn2x20>
+<corn2y20>-18.75</corn2y20>
+<corn2z20> 0.0  </corn2z20>
+
+<corn3x20> 18.75</corn3x20>
+<corn3y20> 18.75</corn3y20>
+<corn3z20> 0.0  </corn3z20>
+
+<centerx20> 0.0</centerx20>
+<centery20> 0.0</centery20>
+<centerz20> 0.0</centerz20>
+
+
+
+<corn0x5> 18.75</corn0x5>
+<corn0y5> 18.75</corn0y5>
+<corn0z5> 0.0  </corn0z5>
+
+<corn1x5>-18.75</corn1x5>
+<corn1y5> 18.75</corn1y5>
+<corn1z5> 0.0  </corn1z5>
+
+<corn2x5>-18.75</corn2x5>
+<corn2y5>-18.75</corn2y5>
+<corn2z5> 0.0  </corn2z5>
+
+<corn3x5> 18.75</corn3x5>
+<corn3y5>-18.75</corn3y5>
+<corn3z5> 0.0  </corn3z5>
+
+<centerx5> 0.0</centerx5>
+<centery5> 0.0</centery5>
+<centerz5> 0.0</centerz5>
+
+
+<corn0x0> 18.75</corn0x0>
+<corn0y0> 18.75</corn0y0>
+<corn0z0> 0.0  </corn0z0>
+<corn1x0>-18.75</corn1x0>
+<corn1y0> 18.75</corn1y0>
+<corn1z0> 0.0  </corn1z0>
+<corn2x0>-18.75</corn2x0>
+<corn2y0>-18.75</corn2y0>
+<corn2z0> 0.0  </corn2z0>
+<corn3x0> 18.75</corn3x0>
+<corn3y0>-18.75</corn3y0>
+<corn3z0> 0.0  </corn3z0>
+<centerx0> 0.0</centerx0>
+<centery0> 0.0</centery0>
+<centerz0> 0.0</centerz0>
+
+
+<ht0>2.285</ht0>
+<orients0>0</orients0>
+<sideSizes0>39.6</sideSizes0>
+<ht1>2.285</ht1>
+<orients1>0</orients1>
+<sideSizes1>39.6</sideSizes1>
+<ht2>2.285</ht2>
+<orients2>0</orients2>
+<sideSizes2>39.6</sideSizes2>
+<ht3>2.285</ht3>
+<orients3>0</orients3>
+<sideSizes3>39.6</sideSizes3>
+<ht4>2.285</ht4>
+<orients4>0</orients4>
+<sideSizes4>39.6</sideSizes4>
+<ht5>2.285</ht5>
+<orients5>0</orients5>
+<sideSizes5>39.6</sideSizes5>
+<ht6>2.285</ht6>
+<orients6>0</orients6>
+<sideSizes6>39.6</sideSizes6>
+<ht7>2.285</ht7>
+<orients7>0</orients7>
+<sideSizes7>39.6</sideSizes7>
+<ht8>2.285</ht8>
+<orients8>0</orients8>
+<sideSizes8>39.6</sideSizes8>
+<ht9>2.285</ht9>
+<orients9>0</orients9>
+<sideSizes9>39.6</sideSizes9>
+<ht10>2.285</ht10>
+<orients10>0</orients10>
+<sideSizes10>39.6</sideSizes10>
+<ht11>2.285</ht11>
+<orients11>0</orients11>
+<sideSizes11>39.6</sideSizes11>
+<ht12>2.285</ht12>
+<orients12>0</orients12>
+<sideSizes12>39.6</sideSizes12>
+<ht13>2.285</ht13>
+<orients13>0</orients13>
+<sideSizes13>39.6</sideSizes13>
+<ht14>2.285</ht14>
+<orients14>0</orients14>
+<sideSizes14>39.6</sideSizes14>
+<ht15>2.285</ht15>
+<orients15>0</orients15>
+<sideSizes15>39.6</sideSizes15>
+<ht16>2.285</ht16>
+<orients16>0</orients16>
+<sideSizes16>39.6</sideSizes16>
+<ht17>2.285</ht17>
+<orients17>0</orients17>
+<sideSizes17>39.6</sideSizes17>
+<ht18>2.285</ht18>
+<orients18>0</orients18>
+<sideSizes18>39.6</sideSizes18>
+<ht19>2.285</ht19>
+<orients19>0</orients19>
+<sideSizes19>39.6</sideSizes19>
+<ht20>2.285</ht20>
+<orients20>0</orients20>
+<sideSizes20>39.6</sideSizes20>

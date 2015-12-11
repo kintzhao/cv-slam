@@ -1,0 +1,260 @@
+================仿真环境参数检查==========================================
+检查选项:
+1. 安装: 相机中心在 机器人中心上
+    <joint name="camera" type="fixed">
+      <origin xyz="0.0 0.0 0.10" rpy="0 -1.5708 0.0" />
+      <parent link="base_link" />
+      <child link="base_camera_link" />
+    </joint>
+
+1.1 相机内参设置
+  白噪声:   0.007
+   水平视角   成像像素 640*480
+   依据公式  f = (width/2) / tan( deg2rad(hfov)/2) = (640/2) / tan(deg2rad(90)/2)
+
+        <sensor type="camera" name="camera1">
+          <update_rate>30.0</update_rate>
+          <camera name="head">
+            <horizontal_fov>1.3962634</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.02</near>
+              <far>300</far>
+            </clip>
+            <noise>
+              <type>gaussian</type>
+              <!-- Noise is sampled independently per pixel on each frame.
+                   That pixel's noise value is added to each of its color
+                   channels, which at that point lie in the range [0,1]. -->
+              <mean>0.0</mean>
+              <stddev>0.007</stddev>
+            </noise>
+          </camera>
+          <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+            <alwaysOn>true</alwaysOn>
+            <updateRate>30.0</updateRate>
+            <cameraName>camera1</cameraName>
+            <imageTopicName>/usb_cam/image_raw</imageTopicName>
+            <cameraInfoTopicName>/usb_cam/camera_info</cameraInfoTopicName>
+            <frameName>base_camera_link</frameName>
+            <hackBaseline>0.07</hackBaseline>
+            <distortionK1>0.0</distortionK1>
+            <distortionK2>0.0</distortionK2>
+            <distortionK3>0.0</distortionK3>
+            <distortionT1>0.0</distortionT1>
+            <distortionT2>0.0</distortionT2>
+          </plugin>
+        </sensor>
+
+
+2. 相机镜头距二维码的高度
+    2.3 - 0.005 =2.295 m  二维码高度
+    0.1 cm相机高度            ==>  视角高度 2.285 m .
+
+        <link name='link_column_4'>
+          <pose>7.45747 -1.41326 1.20074 1.7e-05 -9.4e-05 0.007673</pose>
+        </link>
+
+        <link name='mark_1'>
+          <pose>0.449898 -0.467016 2.3001 1.7e-05 -9.4e-05 0.007673</pose>
+        </link>
+
+      <model name='mobile_base'>
+        <pose>0.002603 0.019967 -0.002123 0.000159 -0.007971 -0.008099</pose>
+        <link name='base_footprint'>
+          <pose>0.002603 0.019967 -0.002123 0.000159 -0.007971 -0.008099</pose>
+        </link>
+
+    <joint name="camera" type="fixed">
+      <origin xyz="0.0 0.0 0.10" rpy="0 -1.5708 0.0" />
+      <parent link="base_footprint" />
+      <child link="base_camera_link" />
+    </joint>
+
+    <link name='mark_17'>
+        <geometry>
+                <box>
+                  <size>.496 .496 .01</size>
+                </box>
+        </geometry>
+      </collision>
+
+
+3. 二维码的实际尺寸检查  1417 pixs
+    按照比例填充
+16.76    0.375cm
+-----  = -------
+22.48    0.503cm
+
+
+<corn0x20>-18.75</corn0x20>
+<corn0y20> 18.75</corn0y20>
+<corn0z20> 0.0  </corn0z20>
+
+
+
+
+
+
+<link name='mark_17'>
+   <pose>2.5 5.5 1.1 0 0 0</pose>
+   <collision name='collision'>
+     <geometry>
+             <box>
+               <size>.496 .496 .01</size>
+             </box>
+     </geometry>
+   </collision>
+
+   <visual name='visual'>
+     <geometry>
+             <box>
+               <size>.496 .496 .01</size>
+             </box>
+     </geometry>
+
+     <material>
+       <script>
+         <uri>model://room_marks/materials/17/scripts</uri>
+         <uri>model://room_marks/materials/17/textures</uri>
+         <name>room_marks/Diffuse_17</name>
+       </script>
+     </material>
+   </visual>
+ </link>
+
+===============================================================
+
+
+
+================  EKF检查  ==========================================
+检查选项:
+ 1.工具:  绘图一致性  --> 显示
+ 1.1 uv 与 xy
+          y                      ----->u
+          |                      |
+          | 5 6 7 8 9            |v
+          | 0 1 2 3 4
+          --------------->  x      ( map_base_x_, map_base_y_ )
+                float X= lanmark.x + map_base_x_;
+                float Y= -lanmark.y + map_base_y_;
+
+ 1.2 方向显示:
+         Point start, end;
+         start.x =  lanmark.x + map_base_x_;
+         start.y = -lanmark.y + map_base_y_ ;
+
+         end.x = lanmark.x + 200 * cos(lanmark.theta);
+         end.y = lanmark.y + 200 * sin(lanmark.theta);  //display  y  convert ..
+         end.x =  end.x + map_base_x_;
+         end.y = -end.y + map_base_y_ ;
+         line( map,start,end,rgb,2,8 );
+
+ 2.检查初始坐标系调整: 二维坐标系变换
+      OdomMessage QrSlam::odomToWorld(const OdomMessage src, const Point3f frame_diff)
+      将里程计的值经过(-frame_diff.x, -frame_diff.y, -frame_diff.z)
+      x_world      [  cos(-frame_diff.z)   sin(-frame_diff.z)   0    - frame_diff.x ]  x_odom
+      y_world      [ -sin(-frame_diff.z)   cos(-frame_diff.z)   0    - frame_diff.y ]  y_odom
+      theta_world  [    0                         0             1    - frame_diff.z ]  theta_odom
+
+ 3. 检查运动模型
+ 3.1 直线运动:
+             miu_increase.at<float>(0) =  VEL.x*delta_time * cos(last_miu_theta);
+             miu_increase.at<float>(1) =  VEL.x*delta_time * sin(last_miu_theta);
+             system_state = system_state + Fx.t()*miu_increase;  // X'= X +Jaci_f(x)*delt(x)   predicted mean
+
+             angleWrap(system_state.at<float>(2));
+             Gt_increase.at<float>(0,2) = -VEL.x * sin(last_miu_theta) ;
+             Gt_increase.at<float>(1,2) =  VEL.x * cos(last_miu_theta) ;
+             Gt = I_SLAM + Fx.t() * Gt_increase*Fx ;
+
+             Vt.at<float>(0,0) =   delta_time * cos(last_miu_theta);
+             Vt.at<float>(1,0) =   delta_time * sin(last_miu_theta);
+             Rt = Vt * Mt * Vt.t();//计算Rt
+             system_state_convar = Gt * system_state_convar * Gt.t() + Fx.t() * Rt * Fx; //计算预测方差 Px
+
+ 3.2 自转运动:
+             miu_increase.at<float>(2) =   VEL.y * delta_time;
+             system_state = system_state + Fx.t()*miu_increase;  // X'= X +Jaci_f(x)*delt(x)   predicted mean
+             angleWrap(system_state.at<float>(2));
+
+             Gt_increase.at<float>(0,2) = 0;
+             Gt_increase.at<float>(1,2) = 0;
+             Gt = I_SLAM + Fx.t() * Gt_increase*Fx ;
+
+             Vt.at<float>(2,1) = delta_time;
+             Rt = Vt * Mt * Vt.t();//计算Rt
+ 3.3 圆弧运动:
+             miu_increase.at<float>(0) =  -VEL.x/VEL.y * sin(last_miu_theta) + VEL.x/VEL.y * sin(last_miu_theta + VEL.y * delta_time);
+             miu_increase.at<float>(1) =   VEL.x/VEL.y * cos(last_miu_theta) - VEL.x/VEL.y * cos(last_miu_theta + VEL.y * delta_time);
+             miu_increase.at<float>(2) =   VEL.y * delta_time;
+
+             system_state = system_state + Fx.t()*miu_increase;  // X'= X +Jaci_f(x)*delt(x)   predicted mean
+             angleWrap(system_state.at<float>(2));
+             Gt_increase.at<float>(0,2) = -VEL.x/VEL.y * cos(last_miu_theta) + VEL.x/VEL.y * cos(last_miu_theta+VEL.y * delta_time);
+             Gt_increase.at<float>(1,2) = -VEL.x/VEL.y * sin(last_miu_theta) + VEL.x/VEL.y * sin(last_miu_theta+VEL.y * delta_time);
+             Gt = I_SLAM + Fx.t() * Gt_increase*Fx ;
+
+             Vt.at<float>(0,0) = (-sin(last_miu_theta) + sin(last_miu_theta+VEL.y * delta_time))/VEL.y;
+             Vt.at<float>(0,1) = VEL.x*(sin(last_miu_theta)-sin(last_miu_theta+VEL.y * delta_time))/VEL.y/VEL.y + VEL.x * cos(last_miu_theta+VEL.y * delta_time)*delta_time/VEL.y;
+             Vt.at<float>(1,0) = (cos(last_miu_theta) - cos(last_miu_theta+VEL.y * delta_time))/VEL.y;
+             Vt.at<float>(1,1) = -VEL.x*(cos(last_miu_theta)-cos(last_miu_theta+VEL.y * delta_time))/VEL.y/VEL.y+VEL.x * sin(last_miu_theta+VEL.y * delta_time)*delta_time/VEL.y;
+             Vt.at<float>(2,0) = 0;
+             Vt.at<float>(2,1) = delta_time;
+             Rt = Vt * Mt * Vt.t();//计算Rt
+
+
+4 速度模型协方差
+            /odom 协方差  xyz rpy
+            0.1, 0.0, 0.0,       0.0,        0.0,        0.0,
+            0.0, 0.1, 0.0,       0.0,        0.0,        0.0,
+            0.0, 0.0, 1000000.0, 0.0,        0.0,        0.0,
+            0.0, 0.0, 0.0,       1000000.0,  0.0,        0.0,
+            0.0, 0.0, 0.0,       0.0,        1000000.0,  0.0,
+            0.0, 0.0, 0.0,       0.0,        0.0,        0.05
+
+
+5. 观测模型
+  像素坐标转换为 ==>> 米制坐标 .
+  1.1 uv 与 xy
+           ---------------> u       ----->
+           |
+           | <-----
+           |   y  |
+          v|      |x
+
+  double centXoff = v - camInnerPara_.dy;
+  double centYoff = camInnerPara_.dx - u ;          //采取内参校正数值
+
+  double x_cm  = centXoff * ht_[id] / camInnerPara_.fy; //camInnerFocus;
+  double y_cm =  centYoff * ht_[id] / camInnerPara_.fx; //camInnerFocus;
+
+
+
+5.1 第一次添加状态:
+
+
+5.2 运动预测:
+
+
+
+
+
+===============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+

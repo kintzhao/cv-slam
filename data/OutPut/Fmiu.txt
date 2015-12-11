@@ -1,0 +1,2 @@
+ robot_odom_.x  .y .theta  miu(robot:3) miu(landmark:3N)  x y theta    
+ 3.19171 68.7199 0.768549 3.19171 68.7199 0.768548 

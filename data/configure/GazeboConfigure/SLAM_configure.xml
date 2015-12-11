@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<read>"ekfslam configure by kint zhao at 15.12.07"</read>
+
+<MAP_BASE_Y_>1000</MAP_BASE_Y_>
+<MAP_BASE_X_>1000</MAP_BASE_X_>
+
+<a1>0.001</a1>
+<a2>0.0</a2>
+<a3>0.0</a3>
+<a4>0.005</a4>
+
+<sigma_r>0.1</sigma_r>
+<sigma_phi>0.1</sigma_phi>
+
+<p_init_x_>10</p_init_x_>
+<p_init_y_>10</p_init_y_>
+<p_init_theta_>0.05</p_init_theta_>
+
+<convar_x_>10</convar_x_>
+<convar_y_>10</convar_y_>
+<convar_theta_>0.05</convar_theta_>
+
+<convar_measure0>1000000</convar_measure0>
+<convar_measure1>1000000</convar_measure1>
+<convar_measure2>1000000</convar_measure2>
+<convar_measure3>1</convar_measure3>
+<convar_measure4>0.5</convar_measure4>
+
+<update_odom_linear_>20</update_odom_linear_>
+<update_odom_angle_>0.17</update_odom_angle_>
+<stamp_interval>0.005</stamp_interval>
+
+<INIT_LOCALIZATION>10</INIT_LOCALIZATION>
+<Fixed_mark_ID_>0</Fixed_mark_ID_>
+
+</opencv_storage>
