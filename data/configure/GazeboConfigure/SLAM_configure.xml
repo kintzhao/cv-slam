@@ -24,8 +24,8 @@
 <convar_measure0>1000000</convar_measure0>
 <convar_measure1>1000000</convar_measure1>
 <convar_measure2>1000000</convar_measure2>
-<convar_measure3>1</convar_measure3>
-<convar_measure4>0.5</convar_measure4>
+<convar_measure3>0.007</convar_measure3>
+<convar_measure4>0.007</convar_measure4>
 
 <update_odom_linear_>20</update_odom_linear_>
 <update_odom_angle_>0.17</update_odom_angle_>

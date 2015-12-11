@@ -83,6 +83,7 @@ CVSlam::CVSlam(char* addr,char* config):transport_( ar_handle)
 
     odom_stamp_ = ros::Time::now();
     odom_stamp_old_ = ros::Time::now();
+    last_rob_pose_ = Point3f(-20,-20,-1);
 }
 
 CVSlam::~CVSlam()
@@ -297,8 +298,8 @@ void CVSlam::ekfslamNew(OdomMessage rob_odom, Mat& img)
         increase_d_seita.x = sqrt(robot_increase.x * robot_increase.x + robot_increase.y * robot_increase.y);
         increase_d_seita.y = abs(robot_increase.z);
 
-     //  if( ( (increase_d_seita.x >= 10 ) || (increase_d_seita.y >= 0.067) ) )  //5cm   4°
-       if (1)  //运动触发
+       if( ( (increase_d_seita.x >= 10 ) || (increase_d_seita.y >= 0.067) ) )  //5cm   4°
+     //  if (1)  //运动触发
         {
             cout << "observation start !" << endl;
             Is_Global_search_ = true;    //TODO:   屏蔽局部搜索
@@ -316,7 +317,11 @@ void CVSlam::ekfslamNew(OdomMessage rob_odom, Mat& img)
                 //getObservationsNew();  // TODO
                 current_marks_observed_ = getObservationsNew(marks_metric); //  current observe:  x.y.theta.id
                 cout<<" observationsNew_.size: "<<current_marks_observed_.size()<<" "<<endl;
-
+                for(int t=0; t<current_marks_observed_.size(); t++)
+                {
+                fDebug<<" "<<current_marks_observed_.at(t).id<<" "<<current_marks_observed_.at(t).x<<" "<<current_marks_observed_.at(t).y<<" "<<current_marks_observed_.at(t).theta;
+                 }
+                fDebug<<""<<endl;
                 int curr_landmark_num = getLandmarkNumNew(current_marks_observed_, id_all_marks_);  //为了系统状态扩维使用
                 cout << "--observed_mark_num_old--" << landmark_num_ << "--observed_mark_num----" << curr_landmark_num << endl;
                 if (curr_landmark_num > landmark_num_ )
@@ -708,7 +713,7 @@ void CVSlam::updateSLAM(Mat& sys_state, Mat& sys_convar, int landmarks_num, vect
     Mat Q_convar_ = Mat::zeros(3, 3, CV_32FC1);
     Q_convar_.at<float>(0,0) = convar_measure3_;
     Q_convar_.at<float>(1,1) = convar_measure4_;
-    Q_convar_.at<float>(2,2) = 0.01;
+    Q_convar_.at<float>(2,2) = 0.05;
 
     Mat Identity_system = Mat::eye(3+3*landmarks_num, 3+3*landmarks_num, CV_32FC1); //算法中的单位矩阵
 
@@ -727,6 +732,7 @@ void CVSlam::updateSLAM(Mat& sys_state, Mat& sys_convar, int landmarks_num, vect
                 break;
             }
         }
+         //Is_landmark = false; //TODO
         if (Is_landmark)   //
         {
             Point2f delta = Point2f(sys_state.at<float>(3*curr_landmark_index+3), sys_state.at<float>(3*curr_landmark_index+4))
@@ -741,8 +747,8 @@ void CVSlam::updateSLAM(Mat& sys_state, Mat& sys_convar, int landmarks_num, vect
             predict_observation.y = atan2(delta.y, delta.x) - sys_state.at<float>(2);      //偏离robot的方向角方向的角度   相对xy坐标系下值
 //            predict_observation.y = atan2(delta.y, delta.x) + sys_state.at<float>(2);      //偏离robot的方向角方向的角度   相对xy坐标系下值
 
-            predict_observation.z = sys_state.at<float>(3*curr_landmark_index+5) - sys_state.at<float>(2);
-
+            predict_observation.z = sys_state.at<float>(3*curr_landmark_index+5) + sys_state.at<float>(2);
+           // predict_observation.z = sys_state.at<float>(3*curr_landmark_index+5) - sys_state.at<float>(2);
 
             angleWrap(predict_observation.y);
             angleWrap(predict_observation.z);
@@ -757,24 +763,27 @@ void CVSlam::updateSLAM(Mat& sys_state, Mat& sys_convar, int landmarks_num, vect
             F_system.at<float>(5,3 * curr_landmark_index+5) = 1;
 
             //计算Htjaccibi
-            Mat H_index = Mat::zeros(3, 6, CV_32FC1); //用来计算Ht的2*5矩阵
-            H_index.at<float>(0,0) = -delta.x * distance;
-            H_index.at<float>(0,1) = -delta.y * distance;
-            H_index.at<float>(0,3) =  delta.x * distance;
-            H_index.at<float>(0,4) =  delta.y * distance;
-            H_index.at<float>(1,0) =  delta.y;
-            H_index.at<float>(1,1) = -delta.x;
-//            H_index.at<float>(1,2) =  distance_2;
-            H_index.at<float>(1,2) = -distance_2;
-            H_index.at<float>(1,3) = -delta.y;
-            H_index.at<float>(1,4) =  delta.x;
+            Mat H_i = Mat::zeros(3, 6, CV_32FC1); //用来计算Ht的2*5矩阵
+            H_i.at<float>(0,0) = -delta.x * distance;
+            H_i.at<float>(0,1) = -delta.y * distance;
+            H_i.at<float>(0,3) =  delta.x * distance;
+            H_i.at<float>(0,4) =  delta.y * distance;
 
-            H_index.at<float>(2,3) = -distance_2;
-            H_index.at<float>(2,5) =  distance_2;
-            H_index = (1/distance_2) * H_index;
+            H_i.at<float>(1,0) =  delta.y;
+            H_i.at<float>(1,1) = -delta.x;
+//            H_index.at<float>(1,2) =  distance_2;
+            H_i.at<float>(1,2) = -distance_2;
+            H_i.at<float>(1,3) = -delta.y;
+            H_i.at<float>(1,4) =  delta.x;
+
+//            H_index.at<float>(2,3) = -distance_2;
+            H_i.at<float>(2,3) =  distance_2;
+            H_i.at<float>(2,5) =  distance_2;
+
+            H_i = (1/distance_2) * H_i;
 
             Mat H_system = Mat::zeros(3, 3 + 3*landmarks_num, CV_32FC1);
-            H_system = H_index * F_system ;
+            H_system = H_i * F_system ;
 
             Mat S_update = Mat::zeros(3, 3, CV_32FC1); // 新息阵
             S_update = H_system * sys_convar * H_system.t() + Q_convar_;
@@ -811,6 +820,13 @@ void CVSlam::updateSLAM(Mat& sys_state, Mat& sys_convar, int landmarks_num, vect
         {
             index_landmarks.push_back(select_mark_id) ;
             curr_landmark_index = index_landmarks.size()-1 ;
+//         if(select_mark_id == 0)
+//             curr_landmark_index = 1;
+//         if(select_mark_id == 5)
+//             curr_landmark_index = 0;
+
+
+
             //                if( fixed_mark_id == Fixed_mark_ID_ )
             //                    Fixed_landmark_index_ = curr_landmark_index;
             // 在观测函数 x y 极坐标系下的值。

@@ -233,16 +233,25 @@
   double x_cm  = centXoff * ht_[id] / camInnerPara_.fy; //camInnerFocus;
   double y_cm =  centYoff * ht_[id] / camInnerPara_.fx; //camInnerFocus;
 
-
-
 5.1 第一次添加状态:
+   robot(x,y,theta)  + observation(rou, theta1, theta2 )
 
+sys_state.at<float>( 3) = x + rou * cos( theta + theta1 );  //第j个landmark的y坐标
+sys_state.at<float>( 4) = y + rou * sin( theta + theta1 );  //第j个landmark的x坐标
+sys_state.at<float>( 5) = theta + theta2;  //第j个landmark的x坐标
 
 5.2 运动预测:
+r(x0, y0, theta0)  m(x1, y1, theta1)  ===>>> (rou, theta_1, theta_2)
 
+rou = sqrt(r,m);
+theta_1 = atan2(delta.y, delta.x) - sys_state.at<float>(2);
+theta_2 = theta1 + theta0
 
+z = h(x)
 
-
+h = [ - -   0   +  +  0 ]
+    [ + -  -1   -  +  0 ]
+    [ x x   1   x  x  1 ]
 
 ===============================================================
 
